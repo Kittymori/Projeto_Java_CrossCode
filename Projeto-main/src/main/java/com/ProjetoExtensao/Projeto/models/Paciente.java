@@ -42,6 +42,9 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente")
     private List<Consulta> consultas;
 
+    @OneToMany(mappedBy = "paciente")
+    private List<Vacina> vacinas;
+
     public Paciente(String nomeCompleto, String cpf, LocalDate dataNascimento, String nomeMae, String cartaoSUS, LocalDate dataEntrada) {
         this.nomeCompleto = nomeCompleto;
         this.cpf = cpf;
@@ -54,4 +57,6 @@ public class Paciente {
     public void addConsulta(Consulta consulta) {
         consultas.add(consulta);
     }
+
+    public void addVacina(Vacina vacina) { vacinas.add(vacina); }
 }
