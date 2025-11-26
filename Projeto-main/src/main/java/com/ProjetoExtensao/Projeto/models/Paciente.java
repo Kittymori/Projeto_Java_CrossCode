@@ -54,6 +54,9 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente")
     private List<Exame> exames;
 
+    @OneToMany(mappedBy = "paciente")
+    private List<Internacao> internacoes;
+
     public Paciente(String nomeCompleto, String cpf, LocalDate dataNascimento, String nomeMae, String cartaoSUS, LocalDate dataEntrada) {
         this.nomeCompleto = nomeCompleto;
         this.cpf = cpf;
