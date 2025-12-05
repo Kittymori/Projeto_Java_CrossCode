@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 @Component
 @NoArgsConstructor
-public class TelaRegistroEventosSentinelas extends JFrame {
+public class TelaRegistroEventoSentinela extends JFrame {
 
     @Autowired
     private EventoSentinelaService eventoSentinelaService; 
@@ -33,7 +33,7 @@ public class TelaRegistroEventosSentinelas extends JFrame {
 
     @PostConstruct
     public void initUI() {
-        setTitle("Tela 7 - Registro de Eventos Sentinelas");
+        setTitle("Tela 7 - Registro de Evento Sentinela");
         setSize(1000, 700);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -222,10 +222,9 @@ public class TelaRegistroEventosSentinelas extends JFrame {
             }
             
             // 3. CHAMADA AO CLIENTE REST (POST)
-            // A chamada ao Service deve ser ajustada para buscar pelo NOME no Backend
             
             String resposta = eventoSentinelaService.registrarEventoNaAPI(
-                nomeResidenteProfissional, // O NOME é passado em vez do CPF
+                nomeResidenteProfissional,
                 tipoEvento, 
                 dataStr,
                 ocorrencias,
@@ -317,7 +316,6 @@ public class TelaRegistroEventosSentinelas extends JFrame {
                  btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             }
         } catch (Exception e) {
-            // Ignora se o ícone não for encontrado
         }
         
         btn.setBackground(background);
