@@ -32,15 +32,14 @@ public class NavigationService {
     @Autowired
     @Lazy
     private TelaAgendamentoConsulta telaAgendamentoConsulta;
-
-    // --- NOVAS INJEÇÕES DE DEPENDÊNCIA ---
+    
     @Lazy
     @Autowired
-    private TelaConsultaEventosSentinelas telaConsultaEventosSentinelas;
+    private TelaConsultaEventoSentinela telaConsultaEventoSentinela;
 
     @Lazy
     @Autowired
-    private TelaRegistroEventosSentinelas telaRegistroEventosSentinelas;
+    private TelaRegistroEventoSentinela telaRegistroEventoSentinela;
 
     // -------------------------------------
 
@@ -68,11 +67,11 @@ public class NavigationService {
         telaAgendamentoConsulta.setVisible(true);
     }
 
-    public void abrirTelaConsultaEventosSentinelas() {
-        telaConsultaEventosSentinelas.setVisible(true);
+    public void abrirTelaConsultaEventoSentinela() {
+        telaConsultaEventoSentinela.setVisible(true);
     }
 
-    public void abrirTelaRegistroEventosSentinelas() {
-        telaRegistroEventosSentinelas.setVisible(true);
+    public void abrirTelaRegistroEventoSentinela() {
+        telaRegistroEventoSentinela.setVisible(true);
     }
 }
