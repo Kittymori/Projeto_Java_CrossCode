@@ -22,7 +22,7 @@ import java.util.List;
 
 @Component
 @NoArgsConstructor
-public class TelaConsultaEventosSentinelas extends JFrame {
+public class TelaConsultaEventoSentinela extends JFrame {
 
     @Autowired
     private EventoSentinelaService eventoSentinelaService; 
