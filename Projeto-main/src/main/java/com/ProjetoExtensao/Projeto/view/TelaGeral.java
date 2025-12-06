@@ -81,10 +81,17 @@ public class TelaGeral extends JFrame {
             dispose();
         });
 
+        // Botão Eventos Sentinelas
+        JButton btnEventos = createDashboardButton("Eventos Sentinelas", "eventos.png");
+        btnEventos.addActionListener(e -> {
+            navigationService.abrirTelaConsultaEventosSentinelas();
+            dispose();
+        });
+
         gridPanel.add(btnPacientes);
         gridPanel.add(createDashboardButton("Família", "familia.png"));
         gridPanel.add(createDashboardButton("Documentos", "documentos.png"));
-        gridPanel.add(createDashboardButton("Eventos Sentinelas", "eventos.png"));
+        gridPanel.add(btnEventos);
         gridPanel.add(createDashboardButton("Prontuários", "prontuarios.png"));
         gridPanel.add(btnConsultas);
         gridPanel.add(createDashboardButton("Vacinas", "vacinas.png"));
