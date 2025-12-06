@@ -25,7 +25,7 @@ public class InternacaoService {
     }
 
     public List<Internacao> findByResponsavelId(Long responsavelId) {
-        return internacaoRepositorio.findByResponsavelSaudeId(responsavelId);
+        return internacaoRepositorio.findByResponsavelId(responsavelId);
     }
 
     public List<Internacao> findByHospital(String nomeHospital) {

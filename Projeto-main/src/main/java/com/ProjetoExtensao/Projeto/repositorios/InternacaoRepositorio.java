@@ -12,7 +12,7 @@ public interface InternacaoRepositorio extends JpaRepository<Internacao, Long> {
 
     List<Internacao> findByPacienteId(Long pacienteId);
 
-    List<Internacao> findByResponsavelSaudeId(Long responsavelId);
+    List<Internacao> findByResponsavelId(Long responsavelId);
 
     List<Internacao> findByHospitalContainingIgnoreCase(String hospital);
 
