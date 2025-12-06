@@ -25,12 +25,11 @@ public class TelaRegistroEventoSentinela extends JFrame {
     private NavigationService navigationService;
 
     // Campos de entrada da tela
-    private JTextField txtCpfResidente; // ⬅️ CAMPO CORRIGIDO PARA CPF
+    private JTextField txtCpfResidente;
     private JTextField txtData;
     private JSpinner spinnerOcorrencias;
     private JTextArea txtObservacoes;
     private ButtonGroup grupoEventos;
-    // O campo 'txtNome' foi removido, pois agora usamos o CPF como identificador.
 
     @PostConstruct
     public void initUI() {
@@ -83,17 +82,15 @@ public class TelaRegistroEventoSentinela extends JFrame {
         Font fonteLabel = new Font("Segoe UI", Font.BOLD, 14);
         Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 13);
 
-        // 1. LINHA DO RESIDENTE/PROFISSIONAL (AGORA COLETA O CPF) ⬅️ ALTERAÇÃO AQUI
+        // 1. LINHA DO PACIENTE
         grid.gridx = 0;
         grid.gridy = 0;
         grid.gridwidth = 2;
         grid.weightx = 1.0;
 
-        // Rótulo alterado para CPF
-        panelContent.add(createLabel("CPF do Residente/Paciente", fonteLabel), grid);
+        panelContent.add(createLabel("CPF do Paciente", fonteLabel), grid);
 
         grid.gridy++;
-        // Variável txtCpfResidente sendo usada
         txtCpfResidente = createTextField(fonteCampo, 25);
         panelContent.add(txtCpfResidente, grid);
 
@@ -189,7 +186,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
         btnCancelar.addActionListener(e -> dispose());
     }
 
-    // --- Lógica de Aplicação ---
+    //Lógica de Aplicação
 
     private String getSelectedRadioButtonText() {
         for (java.util.Enumeration<AbstractButton> buttons = grupoEventos.getElements(); buttons.hasMoreElements();) {
@@ -204,10 +201,9 @@ public class TelaRegistroEventoSentinela extends JFrame {
     private void registrarEvento() {
         try {
             // 1. Coleta dos dados
-            String pacienteCpf = txtCpfResidente.getText().trim(); // ⬅️ COLETA DO NOVO CAMPO CPF
+            String pacienteCpf = txtCpfResidente.getText().trim();
             String tipoEvento = getSelectedRadioButtonText();
             String dataOcorrido = txtData.getText().trim();
-            // Integer ocorrencias = (Integer) spinnerOcorrencias.getValue(); // Removido pois o service não usa
 
             // 2. Validação básica
             if (pacienteCpf.isEmpty() || tipoEvento == null || dataOcorrido.isEmpty()) {
@@ -217,7 +213,6 @@ public class TelaRegistroEventoSentinela extends JFrame {
             }
 
             // 3. CHAMADA AO SERVICE (Usando o CPF)
-            // O service final não utiliza 'ocorrencias' nem 'observacoes'
             eventoSentinelaService.salvarEvento(
                     pacienteCpf,
                     tipoEvento,
@@ -237,25 +232,23 @@ public class TelaRegistroEventoSentinela extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro no formato da data. Use DD/MM/AAAA.",
                     "Erro de Formato", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
-            // Captura o erro se o Paciente/CPF não for encontrado no PacienteService
             JOptionPane.showMessageDialog(this, "Erro de registro: " + e.getMessage(),
                     "Erro de Dados", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            // Exceção geral para problemas de banco ou comunicação
             JOptionPane.showMessageDialog(this, "Erro inesperado ao salvar: " + e.getMessage(),
                     "Erro Geral", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void limparCampos() {
-        txtCpfResidente.setText(""); // Limpa o novo campo CPF
+        txtCpfResidente.setText("");
         txtData.setText("");
         spinnerOcorrencias.setValue(1);
         txtObservacoes.setText("");
         grupoEventos.clearSelection();
     }
 
-    // --- MÉTODOS DE LAYOUT (Mantidos) ---
+    //MÉTODOS DE LAYOUT
 
     private JPanel createEventoSentinelaPanel(Font fonteLabel, Font fonteCampo) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 5));
@@ -281,16 +274,12 @@ public class TelaRegistroEventoSentinela extends JFrame {
             panel.add(radio);
         }
 
-        // Selecionar o primeiro como padrão (se desejar)
         if (eventos.length > 0) {
             ((JRadioButton) panel.getComponent(0)).setSelected(true);
         }
 
         return panel;
     }
-
-    // MÉTODOS createHeaderPanel, createHeaderButton, createLabel, createTextField, createButton...
-    // ... mantidos do seu código original para a funcionalidade do JFrame e layout.
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -342,11 +331,6 @@ public class TelaRegistroEventoSentinela extends JFrame {
         JButton btn = new JButton(text);
 
         try {
-            // Simulando o carregamento de ícone, ajuste o caminho conforme necessário
-            // ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
-            // Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-            // btn.setIcon(new ImageIcon(scaledImage));
-
             if (!text.isEmpty()) {
                 btn.setHorizontalTextPosition(SwingConstants.RIGHT);
             } else {
