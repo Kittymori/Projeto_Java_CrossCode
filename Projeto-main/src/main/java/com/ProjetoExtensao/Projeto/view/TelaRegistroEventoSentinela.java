@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -212,7 +211,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
                 return;
             }
 
-            // 3. CHAMADA AO SERVICE (Usando o CPF)
+            // 3. CHAMADA AO SERVICE
             eventoSentinelaService.salvarEvento(
                     pacienteCpf,
                     tipoEvento,
