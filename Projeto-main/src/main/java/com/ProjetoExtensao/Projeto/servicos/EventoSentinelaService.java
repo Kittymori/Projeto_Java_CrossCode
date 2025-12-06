@@ -28,6 +28,10 @@ public class EventoSentinelaService {
         return eventoSentinelaRepositorio.findByPacienteId(paciente.getId());
     }
 
+    public List<EventoSentinela> buscarTodosEventosNaAPI() {
+        return eventoSentinelaRepositorio.findAll();
+    }
+
     public void salvarEvento(String pacienteCpf, String tipoEvento, String dataOcorrido) {
 
         Paciente paciente = pacienteService.findPacienteByCpf(pacienteCpf);

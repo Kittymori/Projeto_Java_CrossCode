@@ -84,7 +84,7 @@ public class TelaGeral extends JFrame {
         // Botão Eventos Sentinelas
         JButton btnEventos = createDashboardButton("Eventos Sentinelas", "eventos.png");
         btnEventos.addActionListener(e -> {
-            navigationService.abrirTelaConsultaEventosSentinelas();
+            navigationService.abrirTelaConsultaEventoSentinela();
             dispose();
         });
 

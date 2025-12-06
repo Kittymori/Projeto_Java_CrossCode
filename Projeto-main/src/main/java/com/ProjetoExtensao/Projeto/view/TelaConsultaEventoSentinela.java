@@ -69,7 +69,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         JButton btnRegistrar = createButton("Registrar Evento");
         btnRegistrar.addActionListener(e -> {
-            navigationService.abrirTelaRegistroEventosSentinelas();
+            navigationService.abrirTelaRegistroEventoSentinela();
             dispose();
         });
 
@@ -282,16 +282,15 @@ public class TelaConsultaEventoSentinela extends JFrame {
             
             // 1. Acesso aos dados do Paciente
             if (evento.getPaciente() != null) {
-                cpfPaciente = evento.getPaciente().getCpf(); 
-                nomePaciente = evento.getPaciente().getNome();
+                cpfPaciente = evento.getPaciente().getCpf();
+                nomePaciente = evento.getPaciente().getNomeCompleto();
             } else {
                 cpfPaciente = "[ERRO/NULO]";
                 nomePaciente = "[ERRO/NULO]";
             }
             
-            String tipoEvento = evento.getTipoEvento().toString();  
-            String dataStr = evento.getDataOcorrido().format(formatter);  
-            String ocorrencia = String.valueOf(evento.getOcorrencia());  
+            String tipoEvento = evento.getTipoEvento().toString();
+            String dataStr = evento.getDataOcorrido().format(formatter);
 
             // 2. CONDIÇÕES DE FILTRAGEM
             
@@ -315,8 +314,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
                     cpfPaciente,       
                     nomePaciente,      
                     tipoEvento,        
-                    dataStr,           
-                    ocorrencia         
+                    dataStr,
                 });
             }
         }
