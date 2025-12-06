@@ -1,7 +1,7 @@
 package com.ProjetoExtensao.Projeto.view;
 
 import com.ProjetoExtensao.Projeto.infra.Cores;
-import com.ProjetoExtensao.Projeto.models.EventoSentinela; 
+import com.ProjetoExtensao.Projeto.models.EventoSentinela;
 import com.ProjetoExtensao.Projeto.servicos.EventoSentinelaService;
 import com.ProjetoExtensao.Projeto.servicos.NavigationService;
 import jakarta.annotation.PostConstruct;
@@ -14,10 +14,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Component
@@ -25,27 +24,22 @@ import java.util.List;
 public class TelaConsultaEventoSentinela extends JFrame {
 
     @Autowired
-    private EventoSentinelaService eventoSentinelaService; 
+    private EventoSentinelaService eventoSentinelaService;
     @Lazy
     @Autowired
     private NavigationService navigationService;
-    private JComboBox<String> comboEvento, comboMes, comboAno;
+    private JTextField txtCpfFiltro;
+    private JTextField txtDataFiltro; 
+    private JComboBox<String> comboEvento;
     private JTable tabelaEventos;
     private DefaultTableModel tableModel;
 
-    // Lista dos eventos sentinelas para o filtro
+    // Lista de Eventos
     private static final String[] EVENTOS_SENTINELAS_LIST = {
             "Todos", "Tentativa de Suicídio", "Desnutrição",
             "Quedas", "Óbito", "Diarreia", "Pressão arterial",
             "Escabiose", "Glicemia", "Desidratação", "Temperatura",
             "Úlcera por pressão"
-    };
-
-    // Lista completa dos meses
-    private static final String[] MESES_LIST = {
-            "Todos", "Janeiro", "Fevereiro", "Março", "Abril",
-            "Maio", "Junho", "Julho", "Agosto", "Setembro",
-            "Outubro", "Novembro", "Dezembro"
     };
 
     @PostConstruct
@@ -57,12 +51,10 @@ public class TelaConsultaEventoSentinela extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Adicionar o Painel de Cabeçalho
         add(createHeaderPanel(), BorderLayout.NORTH);
-
         getContentPane().setBackground(Cores.COR_FUNDO_CLARO);
 
-        //Painel Central
+        // Painel Central
         JPanel panelCenter = new JPanel(new BorderLayout(0, 10));
         panelCenter.setOpaque(false);
         panelCenter.setBorder(new EmptyBorder(20, 40, 20, 40));
@@ -86,7 +78,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         panelCenter.add(panelHeader, BorderLayout.NORTH);
 
-        // Painel de Filtros
+        //Painel de Filtros
         JPanel panelFiltros = new JPanel();
         panelFiltros.setLayout(new GridBagLayout());
         panelFiltros.setBackground(Cores.COR_FUNDO_CINZA);
@@ -98,40 +90,41 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         Font fonteLabel = new Font("Segoe UI", Font.BOLD, 14);
         Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 13);
-
-        // 1. Evento
+        
+        // 1. CPF
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.35;
+        panelFiltros.add(createLabel("CPF do Paciente", fonteLabel), gbc);
+        
+        gbc.gridy = 1;
+        txtCpfFiltro = new JTextField(15);
+        txtCpfFiltro.setFont(fonteCampo);
+        panelFiltros.add(txtCpfFiltro, gbc);
+
+
+        // 2. Data
+        gbc.gridx = 1; 
+        gbc.gridy = 0;
+        gbc.weightx = 0.35;
+        panelFiltros.add(createLabel("Data (DD/MM/AAAA)", fonteLabel), gbc);
+
+        gbc.gridy = 1;
+        txtDataFiltro = new JTextField(10);
+        txtDataFiltro.setFont(fonteCampo);
+        panelFiltros.add(txtDataFiltro, gbc);
+
+
+        // 3. Evento
+        gbc.gridx = 2; 
+        gbc.gridy = 0;
+        gbc.weightx = 0.2; 
         panelFiltros.add(createLabel("Evento", fonteLabel), gbc);
 
         gbc.gridy = 1;
         comboEvento = new JComboBox<>(EVENTOS_SENTINELAS_LIST);
         comboEvento.setFont(fonteCampo);
         panelFiltros.add(comboEvento, gbc);
-
-        // 2. Mês
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        panelFiltros.add(createLabel("Mês", fonteLabel), gbc);
-
-        gbc.gridy = 1;
-        comboMes = new JComboBox<>(MESES_LIST);
-        comboMes.setFont(fonteCampo);
-        panelFiltros.add(comboMes, gbc);
-
-        // 3. Ano
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.weightx = 0.25;
-        panelFiltros.add(createLabel("Ano", fonteLabel), gbc);
-
-        gbc.gridy = 1;
-        String[] anos = {"Todos", "2024", "2025", "2026"};
-        comboAno = new JComboBox<>(anos);
-        comboAno.setFont(fonteCampo);
-        panelFiltros.add(comboAno, gbc);
 
         // 4. Botão Pesquisar
         gbc.gridx = 3;
@@ -146,9 +139,8 @@ public class TelaConsultaEventoSentinela extends JFrame {
         panelCenter.add(panelFiltros, BorderLayout.CENTER);
 
 
-        //Painel da Tabela
-
-        String[] colunas = {"Eventos", "Data", "Ocorrências"};
+        // Painel da Tabela
+        String[] colunas = {"CPF do Paciente", "Nome do Paciente", "Eventos", "Data", "Ocorrências"};
         tableModel = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -177,14 +169,13 @@ public class TelaConsultaEventoSentinela extends JFrame {
         carregarDadosTabela();
     }
 
-    // MÉTODOS DE CABEÇALHO
+    //MÉTODOS DE LAYOUT
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Cores.COR_FUNDO_CLARO);
         headerPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
 
-        // Lado Esquerdo: Nome e Subtítulo
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         logoPanel.setOpaque(false);
 
@@ -195,14 +186,12 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         headerPanel.add(logoPanel, BorderLayout.WEST);
 
-        // Lado Direito: Botões Admin, Sair e Atualizar
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         buttonPanel.setOpaque(false);
 
         Color btnBackground = Cores.COR_RODAPE;
         Color btnForeground = Cores.COR_FUNDO_CLARO;
 
-        // 1. Administrador Painel
         JButton btnAdmin = createHeaderButton("Administrador Painel", btnBackground, btnForeground, "admin.png");
         btnAdmin.addActionListener(e -> {
             navigationService.abrirTelaGeral();
@@ -210,14 +199,12 @@ public class TelaConsultaEventoSentinela extends JFrame {
         });
         buttonPanel.add(btnAdmin);
 
-        // 2. Sair
         JButton btnSair = createHeaderButton("Sair", btnBackground, btnForeground, "exit.png");
         btnSair.addActionListener(e -> {
             dispose();
         });
         buttonPanel.add(btnSair);
 
-        // 3. Atualizar
         JButton btnAtualizar = createHeaderButton("", btnBackground, btnForeground, "refresh.png");
         btnAtualizar.addActionListener(e -> {
             carregarDadosTabela();
@@ -231,19 +218,13 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
     private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
         JButton btn = new JButton(text);
-
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
-            Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-            btn.setIcon(new ImageIcon(scaledImage));
             if (!text.isEmpty()) {
                 btn.setHorizontalTextPosition(SwingConstants.RIGHT);
             } else {
                 btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             }
-        } catch (Exception e) {
-        }
-
+        } catch (Exception e) { }
         btn.setBackground(background);
         btn.setForeground(foreground);
         btn.setFocusPainted(false);
@@ -252,18 +233,10 @@ public class TelaConsultaEventoSentinela extends JFrame {
         return btn;
     }
 
-    // Métodos Auxiliares Comuns
-
     private JLabel createLabel(String text, Font font) {
         JLabel label = new JLabel(text);
         label.setFont(font);
         return label;
-    }
-
-    private JTextField createTextField(Font font, int columns) {
-        JTextField txt = new JTextField(columns);
-        txt.setFont(font);
-        return txt;
     }
 
     private JButton createButton(String text) {
@@ -275,32 +248,81 @@ public class TelaConsultaEventoSentinela extends JFrame {
         return btn;
     }
 
-    //Lógica de Consulta e Filtragem com o Backend
+    //LÓGICA DE CONSULTA E FILTRAGEM
 
     public void carregarDadosTabela() {
         tableModel.setRowCount(0);
+        
+        // Coleta os valores de filtro
+        String cpfFiltro = txtCpfFiltro.getText().trim();
+        String dataFiltroStr = txtDataFiltro.getText().trim();
+        String eventoSelecionado = (String) comboEvento.getSelectedItem();
 
-        // 1. CHAMA O MÉTODO DO SERVICE
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dataFiltro = null;
+        
+        if (!dataFiltroStr.isEmpty()) {
+            try {
+                dataFiltro = LocalDate.parse(dataFiltroStr, formatter);
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(this, "Erro no formato da Data de Filtro. Use DD/MM/AAAA.", 
+                                              "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        
+        // CHAMA O MÉTODO DO SERVICE
         List<EventoSentinela> eventos = eventoSentinelaService.buscarTodosEventosNaAPI();
 
-        String eventoSelecionado = (String) comboEvento.getSelectedItem();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        // 2. FILTRAGEM E ADIÇÃO À TABELA
+        // FILTRAGEM E ADIÇÃO À TABELA
         for (EventoSentinela evento : eventos) {
-            String tipoEvento = evento.getTipoEvento().toString(); 
-            String dataStr = evento.getDataOcorrido().format(formatter); 
-            String ocorrencia = String.valueOf(evento.getOcorrencia()); 
+            
+            String cpfPaciente;
+            String nomePaciente;
+            
+            // 1. Acesso aos dados do Paciente
+            if (evento.getPaciente() != null) {
+                cpfPaciente = evento.getPaciente().getCpf(); 
+                nomePaciente = evento.getPaciente().getNome();
+            } else {
+                cpfPaciente = "[ERRO/NULO]";
+                nomePaciente = "[ERRO/NULO]";
+            }
+            
+            String tipoEvento = evento.getTipoEvento().toString();  
+            String dataStr = evento.getDataOcorrido().format(formatter);  
+            String ocorrencia = String.valueOf(evento.getOcorrencia());  
 
+            // 2. CONDIÇÕES DE FILTRAGEM
+            
+            // Filtro 1: Evento
             boolean matchEvento = "Todos".equals(eventoSelecionado) || tipoEvento.equals(eventoSelecionado);
             
-            if (matchEvento) {
-                 tableModel.addRow(new Object[]{tipoEvento, dataStr, ocorrencia});
+            // Filtro 2: CPF
+            boolean matchCpf = cpfFiltro.isEmpty() || cpfPaciente.equals(cpfFiltro);
+            
+            // Filtro 3: Data
+            boolean matchData;
+            if (dataFiltro == null) {
+                matchData = true; 
+            } else {
+                matchData = evento.getDataOcorrido().equals(dataFiltro);
+            }
+
+
+            if (matchEvento && matchCpf && matchData) {
+                tableModel.addRow(new Object[]{
+                    cpfPaciente,       
+                    nomePaciente,      
+                    tipoEvento,        
+                    dataStr,           
+                    ocorrencia         
+                });
             }
         }
         
         if (tableModel.getRowCount() == 0 && !eventos.isEmpty()) {
-             JOptionPane.showMessageDialog(this, "Nenhum evento encontrado para o filtro selecionado.", "Consulta Vazia", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Nenhum evento encontrado para os filtros selecionados.", "Consulta Vazia", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
