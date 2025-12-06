@@ -31,17 +31,29 @@ public class EventoSentinelaController {
     public ResponseEntity<String> criarEvento(@RequestBody EventoSentinelaRequest request) {
 
         eventoSentinelaService.salvarEvento(
-                request.pacienteCpf(),
-                request.tipoEvento(),
-                request.dataOcorrido()
+                request.getPacienteCpf(),
+                request.getTipoEvento(),
+                request.getDataOcorrido()
         );
 
         return ResponseEntity.ok("Evento sentinela registrado com sucesso!");
     }
 
-    public record EventoSentinelaRequest(
-            String pacienteCpf,
-            String tipoEvento,
-            String dataOcorrido
-    ) {}
+    public static class EventoSentinelaRequest {
+        private String pacienteCpf;
+        private String tipoEvento;
+        private String dataOcorrido;
+
+        public String getPacienteCpf() {
+            return pacienteCpf;
+        }
+
+        public String getTipoEvento() {
+            return tipoEvento;
+        }
+
+        public String getDataOcorrido() {
+            return dataOcorrido;
+        }
+    }
 }
