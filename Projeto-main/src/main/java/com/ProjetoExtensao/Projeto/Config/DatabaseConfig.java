@@ -6,6 +6,7 @@ import com.ProjetoExtensao.Projeto.models.ResponsavelSaude;
 import com.ProjetoExtensao.Projeto.repositorios.ConsultaRepositorio;
 import com.ProjetoExtensao.Projeto.repositorios.PacienteRepositorio;
 import com.ProjetoExtensao.Projeto.repositorios.ResponsavelRepositorio;
+import com.ProjetoExtensao.Projeto.servicos.EventoSentinelaService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +23,9 @@ public class DatabaseConfig {
     public DatabaseConfig(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
+    // Injeção do EventoSentinelaService
     @Bean
-    CommandLineRunner initDB(ResponsavelRepositorio responsavelRepositorio, PacienteRepositorio pacienteRepositorio, ConsultaRepositorio consultaRepositorio) {
+    CommandLineRunner initDB(ResponsavelRepositorio responsavelRepositorio, PacienteRepositorio pacienteRepositorio, ConsultaRepositorio consultaRepositorio, EventoSentinelaService eventoSentinelaService) {
         return args -> {
             if (!isTablePopulated("pacientes")) {
                 System.out.println("Preenchendo o banco de dados...");
@@ -51,6 +52,10 @@ public class DatabaseConfig {
                 consultaRepositorio.save(new Consulta(LocalDate.now(), LocalTime.of(8,30), "ESPECIALIZADA", rs2, p4));
                 consultaRepositorio.save(new Consulta(LocalDate.now(), LocalTime.of(14,20), "ESPECIALIZADA", rs3, p8));
                 consultaRepositorio.save(new Consulta(LocalDate.now(), LocalTime.of(9,00), "EMERGENCIAL", rs4, p9));
+                
+                eventoSentinelaService.salvarEvento(p1.getCpf(), "EVENTO_GRAVE", "2024-07-01"); 
+                eventoSentinelaService.salvarEvento(p4.getCpf(), "QUEDA", "2024-07-05");
+                eventoSentinelaService.salvarEvento(p10.getCpf(), "ULCERA_PRESSAO", "2024-07-10");
 
                 System.out.println("Preenchimento do banco de dados concluído.");
             } else {
