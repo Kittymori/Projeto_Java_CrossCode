@@ -31,4 +31,10 @@ public class PacienteService {
     public Paciente findPacienteByCpf(String cpf) {
         return pacienteRepositorio.findByCpf(cpf).orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
     }
+
+    public void deletarPacientePorId(Long id) {
+        Paciente paciente = pacienteRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+        pacienteRepositorio.delete(paciente);
+    }
 }

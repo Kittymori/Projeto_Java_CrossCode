@@ -9,4 +9,5 @@ public class Cores {
     public static final Color COR_LETRA_PAINEL = new Color(0x666666);
     public static final Color COR_VERMELHO_IDOSAS = new Color(0xD9534F);
     public static final Color COR_VERDE_ENFERMARIA = new Color(0x5CB85C);
+    public static final Color COR_FUNDO_CINZA = new Color(0xB8B8B8);
 }
