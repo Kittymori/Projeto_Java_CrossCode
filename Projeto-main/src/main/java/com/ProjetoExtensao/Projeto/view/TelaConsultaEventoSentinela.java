@@ -17,6 +17,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import javax.swing.text.MaskFormatter;
 import java.util.List;
 
 @Component
@@ -29,7 +30,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
     @Autowired
     private NavigationService navigationService;
     private JTextField txtCpfFiltro;
-    private JTextField txtDataFiltro; 
+    private JFormattedTextField txtDataFiltro;
     private JComboBox<String> comboEvento;
     private JTable tabelaEventos;
     private DefaultTableModel tableModel;
@@ -104,15 +105,21 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
 
         // 2. Data
-        gbc.gridx = 1; 
-        gbc.gridy = 0;
-        gbc.weightx = 0.35;
-        panelFiltros.add(createLabel("Data (DD/MM/AAAA)", fonteLabel), gbc);
+       gbc.gridx = 1; 
+        gbc.gridy = 0;
+        gbc.weightx = 0.35;
+        panelFiltros.add(createLabel("Data (DD/MM/AAAA)", fonteLabel), gbc);
 
-        gbc.gridy = 1;
-        txtDataFiltro = new JTextField(10);
-        txtDataFiltro.setFont(fonteCampo);
-        panelFiltros.add(txtDataFiltro, gbc);
+        gbc.gridy = 1;
+        try {
+            MaskFormatter formatter = new MaskFormatter("##/##/####");
+            txtDataFiltro = new JFormattedTextField(formatter);
+            txtDataFiltro.setColumns(10);
+        } catch (java.text.ParseException e) {
+            txtDataFiltro = new JTextField(10);
+        }
+        txtDataFiltro.setFont(fonteCampo);
+        panelFiltros.add(txtDataFiltro, gbc);
 
 
         // 3. Evento
@@ -150,12 +157,12 @@ public class TelaConsultaEventoSentinela extends JFrame {
         tabelaEventos = new JTable(tableModel);
         tabelaEventos.setFont(fonteCampo);
         tabelaEventos.setRowHeight(25);
-
         tabelaEventos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        tabelaEventos.getTableHeader().setBackground(Cores.COR_FUNDO_CLARO);
-        tabelaEventos.getTableHeader().setForeground(Cores.COR_LETRA_PAINEL);
-
-        JScrollPane scrollPane = new JScrollPane(tabelaEventos);
+        tabelaEventos.getTableHeader().setBackground(Cores.COR_FUNDO_CINZA);
+        tabelaEventos.getTableHeader().setForeground(Cores.COR_LETRA_PAINEL);
+        tabelaEventos.setBackground(Cores.COR_FUNDO_CINZA);
+        
+        JScrollPane scrollPane = new JScrollPane(tabelaEventos);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         JPanel panelTabelaContainer = new JPanel(new BorderLayout());
@@ -216,22 +223,32 @@ public class TelaConsultaEventoSentinela extends JFrame {
         return headerPanel;
     }
 
-    private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
-        JButton btn = new JButton(text);
-        try {
-            if (!text.isEmpty()) {
-                btn.setHorizontalTextPosition(SwingConstants.RIGHT);
-            } else {
-                btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            }
-        } catch (Exception e) { }
-        btn.setBackground(background);
-        btn.setForeground(foreground);
-        btn.setFocusPainted(false);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        return btn;
-    }
+       private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
+        JButton btn = new JButton(text);
+        
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
+            if (icon.getImage() != null) {
+                Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(scaledImage));
+            }
+
+            if (!text.isEmpty()) {
+                btn.setHorizontalTextPosition(SwingConstants.RIGHT);
+            } else {
+                btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            }
+        } catch (Exception e) { 
+        } 
+        
+        // Propriedades visuais
+        btn.setBackground(background);
+        btn.setForeground(foreground);
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        return btn;
+    }
 
     private JLabel createLabel(String text, Font font) {
         JLabel label = new JLabel(text);
