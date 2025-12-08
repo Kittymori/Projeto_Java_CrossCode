@@ -25,7 +25,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
     private NavigationService navigationService;
 
     // Campos de entrada da tela
-    private JTextField txtCpfResidente;
+    private JFormattedTextField txtCpfResidente;
     private JFormattedTextField txtData;
     private JSpinner spinnerOcorrencias;
     private JTextArea txtObservacoes;
@@ -91,9 +91,18 @@ public class TelaRegistroEventoSentinela extends JFrame {
         panelContent.add(createLabel("CPF do Paciente", fonteLabel), grid);
 
         grid.gridy++;
-        txtCpfResidente = createTextField(fonteCampo, 15);
+        
+        try {
+            MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
+            cpfFormatter.setPlaceholderCharacter('_');
+            txtCpfResidente = new JFormattedTextField(cpfFormatter);
+            txtCpfResidente.setColumns(15);
+        } catch (java.text.ParseException e) {
+            txtCpfResidente = new JTextField(15);
+        }
+        
+        txtCpfResidente.setFont(fonteCampo);
         panelContent.add(txtCpfResidente, grid);
-
         // 2. LINHA DA DATA E OCORRÊNCIAS
         grid.gridy++;
         grid.gridwidth = 1;
@@ -248,7 +257,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
     }
 
     private void limparCampos() {
-        txtCpfResidente.setText("");
+        txtCpfResidente.setValue(null);
         txtData.setText("");
         spinnerOcorrencias.setValue(1);
         txtObservacoes.setText("");
