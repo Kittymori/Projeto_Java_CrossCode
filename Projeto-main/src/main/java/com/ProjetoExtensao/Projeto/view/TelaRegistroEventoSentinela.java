@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 
 @Component
@@ -25,7 +26,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
 
     // Campos de entrada da tela
     private JTextField txtCpfResidente;
-    private JTextField txtData;
+    private JFormattedTextField txtData;
     private JSpinner spinnerOcorrencias;
     private JTextArea txtObservacoes;
     private ButtonGroup grupoEventos;
@@ -90,7 +91,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
         panelContent.add(createLabel("CPF do Paciente", fonteLabel), grid);
 
         grid.gridy++;
-        txtCpfResidente = createTextField(fonteCampo, 25);
+        txtCpfResidente = createTextField(fonteCampo, 15);
         panelContent.add(txtCpfResidente, grid);
 
         // 2. LINHA DA DATA E OCORRÊNCIAS
@@ -98,13 +99,20 @@ public class TelaRegistroEventoSentinela extends JFrame {
         grid.gridwidth = 1;
 
         // Coluna 1: Data
-        grid.gridx = 0;
+       grid.gridx = 0;
         grid.weightx = 0.5;
 
         JPanel panelData = new JPanel(new BorderLayout(0, 5));
         panelData.setOpaque(false);
         panelData.add(createLabel("Data (DD/MM/AAAA)", fonteLabel), BorderLayout.NORTH);
-        txtData = createTextField(fonteCampo, 15);
+        try {
+            MaskFormatter formatter = new MaskFormatter("##/##/####");
+            txtData = new JFormattedTextField(formatter);
+            txtData.setPreferredSize(new Dimension(120, 30));
+        } catch (java.text.ParseException e) {
+            txtData = new JTextField(15);
+        }
+        txtData.setFont(fonteCampo);
         panelData.add(txtData, BorderLayout.CENTER);
         panelContent.add(panelData, grid);
 
@@ -326,10 +334,16 @@ public class TelaRegistroEventoSentinela extends JFrame {
         return headerPanel;
     }
 
-    private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
+        private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
         JButton btn = new JButton(text);
 
         try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
+            if (icon.getImage() != null) {
+                Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(scaledImage));
+            }
+
             if (!text.isEmpty()) {
                 btn.setHorizontalTextPosition(SwingConstants.RIGHT);
             } else {
@@ -338,6 +352,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
         } catch (Exception e) {
         }
 
+        // Propriedades visuais
         btn.setBackground(background);
         btn.setForeground(foreground);
         btn.setFocusPainted(false);
