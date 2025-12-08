@@ -29,7 +29,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
     @Lazy
     @Autowired
     private NavigationService navigationService;
-    private JTextField txtCpfFiltro;
+    private JFormattedTextField txtCpfFiltro
     private JFormattedTextField txtDataFiltro;
     private JComboBox<String> comboEvento;
     private JTable tabelaEventos;
@@ -99,7 +99,14 @@ public class TelaConsultaEventoSentinela extends JFrame {
         panelFiltros.add(createLabel("CPF do Paciente", fonteLabel), gbc);
         
         gbc.gridy = 1;
-        txtCpfFiltro = new JTextField(15);
+        try {
+            MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
+            cpfFormatter.setPlaceholderCharacter('_');
+            txtCpfFiltro = new JFormattedTextField(cpfFormatter);
+            txtCpfFiltro.setColumns(15);
+        } catch (java.text.ParseException e) {
+            txtCpfFiltro = new JFormattedTextField(15);
+        }
         txtCpfFiltro.setFont(fonteCampo);
         panelFiltros.add(txtCpfFiltro, gbc);
 
@@ -267,11 +274,11 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
     //LÓGICA DE CONSULTA E FILTRAGEM
 
-    public void carregarDadosTabela() {
+       public void carregarDadosTabela() {
         tableModel.setRowCount(0);
+        String cpfFiltroRaw = txtCpfFiltro.getText().trim();
+        String cpfFiltro = cpfFiltroRaw.replaceAll("[^0-9]", ""); 
         
-        // Coleta os valores de filtro
-        String cpfFiltro = txtCpfFiltro.getText().trim();
         String dataFiltroStr = txtDataFiltro.getText().trim();
         String eventoSelecionado = (String) comboEvento.getSelectedItem();
 
