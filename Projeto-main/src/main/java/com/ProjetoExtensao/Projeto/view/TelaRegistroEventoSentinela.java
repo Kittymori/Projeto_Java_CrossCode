@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -103,12 +104,13 @@ public class TelaRegistroEventoSentinela extends JFrame {
         
         txtCpfResidente.setFont(fonteCampo);
         panelContent.add(txtCpfResidente, grid);
+        
         // 2. LINHA DA DATA E OCORRÊNCIAS
         grid.gridy++;
         grid.gridwidth = 1;
 
         // Coluna 1: Data
-       grid.gridx = 0;
+        grid.gridx = 0;
         grid.weightx = 0.5;
 
         JPanel panelData = new JPanel(new BorderLayout(0, 5));
@@ -202,7 +204,9 @@ public class TelaRegistroEventoSentinela extends JFrame {
         btnCancelar.addActionListener(e -> dispose());
     }
 
-    //Lógica de Aplicação
+    //------------------------------------------
+    // Lógica de Aplicação
+    //------------------------------------------
 
     private String getSelectedRadioButtonText() {
         for (java.util.Enumeration<AbstractButton> buttons = grupoEventos.getElements(); buttons.hasMoreElements();) {
@@ -217,13 +221,19 @@ public class TelaRegistroEventoSentinela extends JFrame {
     private void registrarEvento() {
         try {
             // 1. Coleta dos dados
-            String pacienteCpf = txtCpfResidente.getText().trim();
+            // Removendo caracteres de formatação do CPF para envio ao Service/API
+            String pacienteCpfFormatado = txtCpfResidente.getText().trim();
+            String pacienteCpf = pacienteCpfFormatado.replaceAll("[^0-9]", ""); 
+            
             String tipoEvento = getSelectedRadioButtonText();
             String dataOcorrido = txtData.getText().trim();
+            // A quantidade de ocorrências não está sendo usada na chamada, mas é mantida na tela.
+            // int ocorrencias = (Integer) spinnerOcorrencias.getValue(); 
+            // String observacoes = txtObservacoes.getText().trim();
 
             // 2. Validação básica
-            if (pacienteCpf.isEmpty() || tipoEvento == null || dataOcorrido.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Preencha o CPF, Data e selecione o Tipo de Evento.",
+            if (pacienteCpf.isEmpty() || tipoEvento == null || dataOcorrido.isEmpty() || pacienteCpf.length() != 11) {
+                JOptionPane.showMessageDialog(this, "Preencha corretamente o CPF (11 dígitos), Data e selecione o Tipo de Evento.",
                         "Erro de Validação", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -258,13 +268,17 @@ public class TelaRegistroEventoSentinela extends JFrame {
 
     private void limparCampos() {
         txtCpfResidente.setValue(null);
-        txtData.setText("");
+        txtData.setValue(null); // Usar setValue(null) para JFormattedTextField com MaskFormatter
         spinnerOcorrencias.setValue(1);
         txtObservacoes.setText("");
-        grupoEventos.clearSelection();
+        if (grupoEventos != null) {
+            grupoEventos.clearSelection();
+        }
     }
 
-    //MÉTODOS DE LAYOUT
+    //------------------------------------------
+    // MÉTODOS DE LAYOUT
+    //------------------------------------------
 
     private JPanel createEventoSentinelaPanel(Font fonteLabel, Font fonteCampo) {
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 5));
@@ -343,7 +357,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
         return headerPanel;
     }
 
-        private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
+    private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
         JButton btn = new JButton(text);
 
         try {
@@ -374,12 +388,6 @@ public class TelaRegistroEventoSentinela extends JFrame {
         JLabel label = new JLabel(text);
         label.setFont(font);
         return label;
-    }
-
-    private JTextField createTextField(Font font, int columns) {
-        JTextField txt = new JTextField(columns);
-        txt.setFont(font);
-        return txt;
     }
 
     private JButton createButton(String text) {
