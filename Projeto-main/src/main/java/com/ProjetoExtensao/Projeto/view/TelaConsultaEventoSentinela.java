@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import javax.swing.text.MaskFormatter;
 import java.util.List;
 
 @Component
@@ -79,7 +79,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         panelCenter.add(panelHeader, BorderLayout.NORTH);
 
-        //Painel de Filtros
+        // Painel de Filtros
         JPanel panelFiltros = new JPanel();
         panelFiltros.setLayout(new GridBagLayout());
         panelFiltros.setBackground(Cores.COR_FUNDO_CINZA);
@@ -91,13 +91,13 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         Font fonteLabel = new Font("Segoe UI", Font.BOLD, 14);
         Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 13);
-
+        
         // 1. CPF
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.35;
         panelFiltros.add(createLabel("CPF do Paciente", fonteLabel), gbc);
-
+        
         gbc.gridy = 1;
         try {
             MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
@@ -130,9 +130,9 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
 
         // 3. Evento
-        gbc.gridx = 2;
+        gbc.gridx = 2; 
         gbc.gridy = 0;
-        gbc.weightx = 0.2;
+        gbc.weightx = 0.2; 
         panelFiltros.add(createLabel("Evento", fonteLabel), gbc);
 
         gbc.gridy = 1;
@@ -231,27 +231,28 @@ public class TelaConsultaEventoSentinela extends JFrame {
     }
 
     private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
-    JButton btn = new JButton(text);
+        JButton btn = new JButton(text);
+        
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
+            if (icon.getImage() != null) {
+                Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(scaledImage));
+            }
 
-    ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
-    if (icon.getImage() != null) {
-    Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-    btn.setIcon(new ImageIcon(scaledImage));
-    }
-
-    if (!text.isEmpty()) {
-    btn.setHorizontalTextPosition(SwingConstants.RIGHT);
+            if (!text.isEmpty()) {
+                btn.setHorizontalTextPosition(SwingConstants.RIGHT);
             } else {
                 btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             }
-        } catch (Exception e) {
-        }
-
-// Propriedades visuais
+        } catch (Exception e) { 
+        } 
+        
+        // Propriedades visuais
         btn.setBackground(background);
         btn.setForeground(foreground);
         btn.setFocusPainted(false);
-        tn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13)); 
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         return btn;
     }
@@ -276,33 +277,33 @@ public class TelaConsultaEventoSentinela extends JFrame {
     public void carregarDadosTabela() {
         tableModel.setRowCount(0);
         String cpfFiltroRaw = txtCpfFiltro.getText().trim();
-        String cpfFiltro = cpfFiltroRaw.replaceAll("[^0-9]", "");
-
+        String cpfFiltro = cpfFiltroRaw.replaceAll("[^0-9]", ""); 
+        
         String dataFiltroStr = txtDataFiltro.getText().trim();
         String eventoSelecionado = (String) comboEvento.getSelectedItem();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dataFiltro = null;
-
+        
         if (!dataFiltroStr.isEmpty()) {
             try {
                 dataFiltro = LocalDate.parse(dataFiltroStr, formatter);
             } catch (DateTimeParseException e) {
-                JOptionPane.showMessageDialog(this, "Erro no formato da Data de Filtro. Use DD/MM/AAAA.",
-                        "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erro no formato da Data de Filtro. Use DD/MM/AAAA.", 
+                                              "Erro de Formato", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
-
+        
         // CHAMA O MÉTODO DO SERVICE
         List<EventoSentinela> eventos = eventoSentinelaService.buscarTodosEventosNaAPI();
 
         // FILTRAGEM E ADIÇÃO À TABELA
         for (EventoSentinela evento : eventos) {
-
+            
             String cpfPaciente;
             String nomePaciente;
-
+            
             // 1. Acesso aos dados do Paciente
             if (evento.getPaciente() != null) {
                 cpfPaciente = evento.getPaciente().getCpf();
@@ -311,22 +312,22 @@ public class TelaConsultaEventoSentinela extends JFrame {
                 cpfPaciente = "[ERRO/NULO]";
                 nomePaciente = "[ERRO/NULO]";
             }
-
+            
             String tipoEvento = evento.getTipoEvento().toString();
             String dataStr = evento.getDataOcorrido().format(formatter);
 
             // 2. CONDIÇÕES DE FILTRAGEM
-
+            
             // Filtro 1: Evento
             boolean matchEvento = "Todos".equals(eventoSelecionado) || tipoEvento.equals(eventoSelecionado);
-
+            
             // Filtro 2: CPF
             boolean matchCpf = cpfFiltro.isEmpty() || cpfPaciente.equals(cpfFiltro);
-
+            
             // Filtro 3: Data
             boolean matchData;
             if (dataFiltro == null) {
-                matchData = true;
+                matchData = true; 
             } else {
                 matchData = evento.getDataOcorrido().equals(dataFiltro);
             }
@@ -334,14 +335,14 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
             if (matchEvento && matchCpf && matchData) {
                 tableModel.addRow(new Object[]{
-                        cpfPaciente,
-                        nomePaciente,
-                        tipoEvento,
-                        dataStr,
+                    cpfPaciente,       
+                    nomePaciente,      
+                    tipoEvento,        
+                    dataStr,
                 });
             }
         }
-
+        
         if (tableModel.getRowCount() == 0 && !eventos.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nenhum evento encontrado para os filtros selecionados.", "Consulta Vazia", JOptionPane.INFORMATION_MESSAGE);
         }
