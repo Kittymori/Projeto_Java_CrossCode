@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 
 @Component
@@ -90,7 +91,17 @@ public class TelaRegistroEventoSentinela extends JFrame {
         panelContent.add(createLabel("CPF do Paciente", fonteLabel), grid);
 
         grid.gridy++;
-        txtCpfResidente = createTextField(fonteCampo, 25);
+
+        try {
+            MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
+            cpfFormatter.setPlaceholderCharacter('_');
+            txtCpfResidente = new JFormattedTextField(cpfFormatter);
+            txtCpfResidente.setColumns(15);
+        } catch (java.text.ParseException e) {
+            txtCpfResidente = new JTextField(5);
+        }
+
+        txtCpfResidente.setFont(fonteCampo);
         panelContent.add(txtCpfResidente, grid);
 
         // 2. LINHA DA DATA E OCORRÊNCIAS
@@ -104,7 +115,14 @@ public class TelaRegistroEventoSentinela extends JFrame {
         JPanel panelData = new JPanel(new BorderLayout(0, 5));
         panelData.setOpaque(false);
         panelData.add(createLabel("Data (DD/MM/AAAA)", fonteLabel), BorderLayout.NORTH);
-        txtData = createTextField(fonteCampo, 15);
+        try {
+            MaskFormatter formatter = new MaskFormatter("##/##/####");
+            txtData = new JFormattedTextField(formatter);
+            txtData.setPreferredSize(new Dimension(120, 30));
+        } catch (java.text.ParseException e) {
+            txtData = new JTextField(5);
+        }
+        txtData.setFont(fonteCampo);
         panelData.add(txtData, BorderLayout.CENTER);
         panelContent.add(panelData, grid);
 
