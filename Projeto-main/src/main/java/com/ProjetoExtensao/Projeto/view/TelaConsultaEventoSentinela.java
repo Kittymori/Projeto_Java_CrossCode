@@ -29,9 +29,8 @@ public class TelaConsultaEventoSentinela extends JFrame {
     @Lazy
     @Autowired
     private NavigationService navigationService;
-    // CORRIGIDO: Adicionado ';'
-    private JFormattedTextField txtCpfFiltro;
-    private JFormattedTextField txtDataFiltro;
+    private JTextField txtCpfFiltro;
+    private JTextField txtDataFiltro; 
     private JComboBox<String> comboEvento;
     private JTable tabelaEventos;
     private DefaultTableModel tableModel;
@@ -80,7 +79,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
         panelCenter.add(panelHeader, BorderLayout.NORTH);
 
-        // Painel de Filtros
+        //Painel de Filtros
         JPanel panelFiltros = new JPanel();
         panelFiltros.setLayout(new GridBagLayout());
         panelFiltros.setBackground(Cores.COR_FUNDO_CINZA);
@@ -98,7 +97,7 @@ public class TelaConsultaEventoSentinela extends JFrame {
         gbc.gridy = 0;
         gbc.weightx = 0.35;
         panelFiltros.add(createLabel("CPF do Paciente", fonteLabel), gbc);
-        
+
         gbc.gridy = 1;
         try {
             MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
@@ -165,11 +164,11 @@ public class TelaConsultaEventoSentinela extends JFrame {
         tabelaEventos = new JTable(tableModel);
         tabelaEventos.setFont(fonteCampo);
         tabelaEventos.setRowHeight(25);
+
         tabelaEventos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-        tabelaEventos.getTableHeader().setBackground(Cores.COR_FUNDO_CINZA);
+        tabelaEventos.getTableHeader().setBackground(Cores.COR_FUNDO_CLARO);
         tabelaEventos.getTableHeader().setForeground(Cores.COR_LETRA_PAINEL);
-        tabelaEventos.setBackground(Cores.COR_FUNDO_CINZA);
-        
+
         JScrollPane scrollPane = new JScrollPane(tabelaEventos);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -233,27 +232,17 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
     private JButton createHeaderButton(String text, Color background, Color foreground, String iconPath) {
         JButton btn = new JButton(text);
-        
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("/images/" + iconPath));
-            if (icon.getImage() != null) {
-                Image scaledImage = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(scaledImage));
-            }
-
             if (!text.isEmpty()) {
                 btn.setHorizontalTextPosition(SwingConstants.RIGHT);
             } else {
                 btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             }
-        } catch (Exception e) { 
-        } 
-        
-        // Propriedades visuais
+        } catch (Exception e) { }
         btn.setBackground(background);
         btn.setForeground(foreground);
         btn.setFocusPainted(false);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13)); 
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         return btn;
     }
@@ -277,9 +266,9 @@ public class TelaConsultaEventoSentinela extends JFrame {
 
     public void carregarDadosTabela() {
         tableModel.setRowCount(0);
-        String cpfFiltroRaw = txtCpfFiltro.getText().trim();
-        String cpfFiltro = cpfFiltroRaw.replaceAll("[^0-9]", ""); 
         
+        // Coleta os valores de filtro
+        String cpfFiltro = txtCpfFiltro.getText().trim();
         String dataFiltroStr = txtDataFiltro.getText().trim();
         String eventoSelecionado = (String) comboEvento.getSelectedItem();
 
