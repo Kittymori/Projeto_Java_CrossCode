@@ -218,7 +218,7 @@ public class TelaRegistroEventoSentinela extends JFrame {
     private void registrarEvento() {
         try {
             // 1. Coleta dos dados
-            String pacienteCpf = txtCpfResidente.getText().trim();
+            String pacienteCpf = txtCpfResidente.getText().trim().replaceAll("\\D", "");
             String tipoEvento = getSelectedRadioButtonText();
             String dataOcorrido = txtData.getText().trim();
 
